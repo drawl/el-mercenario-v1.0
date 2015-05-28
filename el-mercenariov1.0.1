@@ -1,0 +1,203 @@
+import pprint
+
+#Comandos que se ejecutan
+prg = """
+mover
+disparar
+disparar
+disparar
+disparar
+disparar
+disparar
+cambiar_dir(derecha)
+disparar
+"""
+
+
+prg2 = """
+cambiar_dir(abajo)
+mover
+
+
+"""
+
+#espacio de juego
+mapa = []
+for i in range(8):
+    mapa.append([0]*7)
+    
+#Posicion de los enemigos en el mapa
+mapa[4][2]=99
+mapa[6][2]=99
+mapa[5][5]=99
+mapa[3][4]=99
+mapa[2][1]=99
+mapa[1][5]=99
+
+pp = pprint.PrettyPrinter()
+pp.pprint(mapa)
+
+def jugar(mapa,programa):
+    # 0: arriba
+    # 1: derecha
+    # 2: abajo
+    # 3: izquierda
+    direccion = 0
+
+    # posicion (fila,columna)
+    pos = (7,0)
+    # Vida del jugador
+    vida = 0
+    #curas del jugador
+    curas=2
+    #Municiones del jugador
+    municion=6
+
+    
+
+    print("Inicio en posicion:",pos)
+    print("Direccion inicial:",direccion)
+    print("La vida inicial es:",vida)
+    print("Las municiones actuales son:",municion)
+
+    lineas = programa.split("\n")
+    print(lineas)
+    for cmd in lineas:
+        print(cmd)
+        print("-> ",end="")
+
+        if cmd == "mover":
+            if vida >0:
+                if direccion==0 :# arriba
+                    if pos ==(0,0) or pos==(0,1) or pos==(0,2) or pos==(0,3) or pos ==(0,4) or pos==(0,5) or pos==(0,6):
+                        print("No puedes salirte del mapa")
+                    else:
+                        pos = (pos[0]-1,pos[1])
+                if direccion==1: # derecha
+                    if pos==(7,6) or pos==(6,6) or pos==(5,6) or pos==(4,6) or pos==(3,6) or pos==(2,6) or pos==(1,6) or pos==(0,6):
+                        print("No puedes salirte del mapa")
+                    else:
+                        pos = (pos[0],pos[1]+1)
+                    
+                if direccion==2: # abajo
+                    if pos == (7,0) or pos == (7,1) or pos == (7,2) or pos == (7,3) or pos == (7,4) or pos == (7,5) or pos == (7,6):
+                        print("No puedes salirte del mapa")
+                    else:
+                        pos = (pos[0]+1,pos[1])
+                if direccion==3: # izquierda
+                    if pos==(7,0) or pos==(6,0) or pos==(5,0) or pos==(4,0) or pos==(3,0) or pos==(2,0) or pos==(1,0) or pos==(0,0):
+                        print("No puedes salirte del mapa")
+                    else:
+                        pos = (pos[0],pos[1]-1)
+                print("Nueva posicion:",pos)
+
+        if cmd[0:11] == "cambiar_dir":
+            if vida > 0:
+                nueva_dir = cmd[12:-1]
+                if nueva_dir=="arriba":
+                    direccion = 0
+                if nueva_dir=="derecha":
+                    direccion = 1
+                if nueva_dir=="abajo":
+                    direccion = 2
+                if nueva_dir=="izquierda":
+                    direccion = 3
+        
+
+        if cmd == "matar":
+            if vida > 0:
+                if mapa[pos[0]][pos[1]]==99:
+                    print("Degollo al enemigo")
+                    mapa[pos[0]][pos[1]]=0
+                else:
+                    print("No hay enemigo al frente")
+## 
+        if cmd == "disparar":
+            if municion > 0:
+                if (pos==(6,0) and direccion==1 and mapa[6][2]==99) or (pos==(6,4) and direccion==3 and mapa[6][2]==99) or (pos==(4,2) and direccion==2 and mapa[4][2]==0 and mapa[6][2]==99) and vida > 0 :
+                    print("Enemigo acabado")
+                    mapa[6][2]=0
+                elif (pos==(4,0) and direccion==1 and mapa[4][2]==99) or (pos==(6,2) and direccion == 0 and mapa[6][2]==0 and mapa[4][2]==99) or (pos==(2,2) and direccion==2 and mapa[4][2]==99) and vida > 0:
+                    print("Un enemigo menos")
+                    mapa[4][2]=0
+                elif (pos == (5,3) and direccion == 1 and mapa[5][5]==99) or (pos==(7,6) and mapa == 0 and mapa[5][5]==99) or (pos==(3,5) and direccion==2 and mapa[5][5]==99) and vida > 0:
+                    print("Justo en la cabeza")
+                    mapa[5][5]=0
+                elif (pos==(3,2) and direccion == 1 and mapa[3][4]==99) or (pos==(3,6) and direccion==3 and mapa[3][4]==99) or (pos==(5,4) and direccion==0 and mapa[3][4]==99) or (pos==(1,4) and direccion==2 and mapa[3][4]==99) and vida > 0:
+                    print("Enemigo muerto")
+                    mapa[3][4]==0
+                elif (pos == (3,5) and direccion==0 and mapa[1][5]==99) or (pos==(1,3) and direccion == 1 and mapa[1][5]==99) and vida > 0:
+                    print("Enemigo asesinado")
+                    mapa[1][5]=0
+                elif (pos == (2,3) and direccion == 3 and mapa[2][1]==99) or (pos==(4,1) and direccion==0 and mapa[2][1]==99) or (pos==(0,1) and direccion==2 and mapa[2][1]==99) and vida > 0:
+                    print("Enemigo acabado")
+                    mapa[2][1]=0
+            
+            else:
+                print("No tengo ningun objetivo para disparar")
+
+        if cmd == "mover":
+            if pos ==(7,2) and vida > 0 and mapa[6][2]==99:
+                vida = vida - 10
+                print("Me han disparado,Vida actual es:",vida)
+            elif pos == (6,5) and vida > 0 and mapa[5][5]==99:
+                vida= vida-10
+                print("Me han disparado,Vida actual es:",vida) 
+            elif pos== (5,2) and vida > 0 and mapa[4][2]==99:
+                vida= vida-10
+                print("Me han disparado,Vida actual es:",vida)
+            elif pos==(4,4) and vida > 0 and mapa[3][4]==99:
+                vida= vida-10
+                print("Me han disparado,Vida actual es:",vida)
+            elif pos==(3,1) and vida > 0 and mapa[2][1]==99:
+                vida= vida-10
+                print("Me han disparado,Vida actual es:",vida)
+            elif pos==(2,5) and vida > 0 and mapa[1][5]==99:
+                vida= vida-10
+                print("Me han disparado,Vida actual es:",vida)
+            elif vida > 0:
+                vida=vida
+                print("Estoy a salvo")
+                
+
+
+                 
+            
+                
+        
+
+        if vida == 0:
+            print("Haz perdido, te han matado")
+            print("Reinicia el juego")
+
+        if mapa[6][2]==0 and mapa[5][5] == 0 and mapa[4][2]==0 and mapa[3][4] == 0 and mapa[2][1] == 0 and mapa[1][5]==0:
+            print("Haz ganado, matastes a todos los enemigos")
+            print("Cierra el juego")
+
+        if cmd == "curarce" and vida > 0 :
+            vida = vida + 10
+            curas = curas - 1
+            if curas >= 0:
+                print("Las curas actuales son",curas,"La vida actual es",vida)
+            else:
+                print("Se te acabaron las curas")
+
+        if cmd == "disparar" and vida > 0:
+            municion = municion - 1
+            if municion >= 0:
+                print("Las municiones actuales son",municion)
+            else:
+                print("Se te acabaron las municiones")
+                
+        
+            
+        
+    
+
+
+
+    
+
+
+jugar(mapa,prg)
+pp.pprint(mapa)
